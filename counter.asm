@@ -21,9 +21,9 @@ ENABLED:    DEFB $00
             DEFW $0000
             DEFW $0000
 
-; #FC21-#FC31 - хэдер.
+; Хэдер.
 
-            DEFS $11
+HEADER:     DEFS $11
 
 ; #FC32-#FC89 - шаблоны цифр счетчика
 ; (стандартно, по 8 байт на символ);
@@ -357,7 +357,7 @@ END_:       LD ($FC16),DE
 ; хэдера, затем это значение делится
 ; на 32:
 
-            LD HL,($FC2C)
+            LD HL,(HEADER+$0B)
             LD B,$05
 WAIT_3:     SRL H
             RR L
@@ -417,7 +417,7 @@ LOOP_1:     INC A
 
 LD_HEADER:  XOR A
             LD (ENABLED),A
-            LD IX,$FC21
+            LD IX,HEADER
             LD DE,$0011
             XOR A
             SCF
@@ -426,8 +426,8 @@ LD_HEADER:  XOR A
             CALL $FE0F
             LD A,$01
             LD (ENABLED),A
-            LD IX,($FC2E)
-            LD DE,($FC2C)
+            LD IX,(HEADER+$0D)
+            LD DE,(HEADER+$0B)
             LD A,$FF
             SCF
             CALL LD_BYTES
