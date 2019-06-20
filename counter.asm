@@ -1,46 +1,46 @@
-            org $FC13
+            org #FC13
 
             JP START
 
 ; #FC16-#FC19 - STR$ значений
 ; счетчика (единицы...тысячи).
 
-            DEFB $48,$48,$48,$48
+            DEFB #48,#48,#48,#48
 
 ; флаг запрета/разрешения включения счетчика.
 
-ENABLED:    DEFB $00
+ENABLED:    DEFB #00
 
 ; #FC1B-#FC1C - адрес счетчика в
 ; таблице.
-            DEFW $0000
+            DEFW #0000
 
 ; #FC1D-#FC20 - адрес счетчика в
 ; дисплейном файле.
 
-            DEFW $0000
-            DEFW $0000
+            DEFW #0000
+            DEFW #0000
 
 ; Хэдер.
 
-HEADER:     DEFS $11
+HEADER:     DEFS #11
 
 ; #FC32-#FC89 - шаблоны цифр счетчика
 ; (стандартно, по 8 байт на символ);
 ; всего - 11 цифр, следующих:
 ; 0-1-2-3-4-5-6-7-8-9-0.
 
-            DEFB $FE,$C6,$BA,$BA,$BA,$BA,$C6,$FE
-            DEFB $FE,$EE,$CE,$EE,$EE,$EE,$82,$FE
-            DEFB $FE,$C6,$BA,$F6,$EE,$DE,$82,$FE
-            DEFB $FE,$82,$F6,$E6,$FA,$BA,$C6,$FE
-            DEFB $FE,$F6,$E6,$D6,$B6,$82,$F6,$FE
-            DEFB $FE,$82,$BE,$86,$FA,$BA,$C6,$FE
-            DEFB $FE,$E6,$DE,$86,$BA,$BA,$C6,$FE
-            DEFB $FE,$82,$FA,$F6,$F6,$EE,$EE,$FE
-            DEFB $FE,$C6,$BA,$C6,$BA,$BA,$C6,$FE
-            DEFB $FE,$C6,$BA,$BA,$C2,$FA,$C6,$FE
-            DEFB $FE,$C6,$BA,$BA,$BA,$BA,$C6,$FE
+            DEFB #FE,#C6,#BA,#BA,#BA,#BA,#C6,#FE
+            DEFB #FE,#EE,#CE,#EE,#EE,#EE,#82,#FE
+            DEFB #FE,#C6,#BA,#F6,#EE,#DE,#82,#FE
+            DEFB #FE,#82,#F6,#E6,#FA,#BA,#C6,#FE
+            DEFB #FE,#F6,#E6,#D6,#B6,#82,#F6,#FE
+            DEFB #FE,#82,#BE,#86,#FA,#BA,#C6,#FE
+            DEFB #FE,#E6,#DE,#86,#BA,#BA,#C6,#FE
+            DEFB #FE,#82,#FA,#F6,#F6,#EE,#EE,#FE
+            DEFB #FE,#C6,#BA,#C6,#BA,#BA,#C6,#FE
+            DEFB #FE,#C6,#BA,#BA,#C2,#FA,#C6,#FE
+            DEFB #FE,#C6,#BA,#BA,#BA,#BA,#C6,#FE
 
 ; Сама процедура загрузки по адресу #FC8A
 ; в основе содержит программу LD-BYTES
@@ -59,23 +59,23 @@ LD_BYTES:   INC D
 ; счётчик, введены строки:
 
             EXX
-            LD C,$00
+            LD C,#00
             EXX
 
 ; Далее опять аналогично ПЗУ:
 
-            LD A,$0A
-            OUT ($FE),A
-            IN A,($FE)
+            LD A,#0A
+            OUT (#FE),A
+            IN A,(#FE)
             RRA
-            AND $20
-            OR $00
+            AND #20
+            OR #00
             LD C,A
             CP A
 LD_BREAK:   RET NZ
 LD_START:   CALL LD_EDGE_1
             JR NC,LD_BREAK
-            LD HL,$0415
+            LD HL,#0415
 LD_WAIT:    DJNZ LD_WAIT
             DEC HL
             LD A,H
@@ -83,19 +83,19 @@ LD_WAIT:    DJNZ LD_WAIT
             JR NZ,LD_WAIT
             CALL LD_EDGE_2
             JR NC,LD_BREAK
-LD_LEADER:  LD B,$9C
+LD_LEADER:  LD B,#9C
             CALL LD_EDGE_2
             JR NC,LD_BREAK
-            LD A,$C6
+            LD A,#C6
             CP B
             JR NC,LD_START
             INC H
             JR NZ,LD_LEADER
-LD_SYNC:    LD B,$C9
+LD_SYNC:    LD B,#C9
             CALL LD_EDGE_1
             JR NC,LD_BREAK
             LD A,B
-            CP $D4
+            CP #D4
             JR NC,LD_SYNC
             CALL LD_EDGE_1
             RET NC
@@ -107,18 +107,18 @@ LD_SYNC:    LD B,$C9
             EXX
             LD A,(ENABLED)
             LD C,A
-            LD ($FC1F),A
+            LD (#FC1F),A
             EXX
 
 ; Далее — аналогично ПЗУ:
 
-            LD H,$00
-            LD B,$B0
+            LD H,#00
+            LD B,#B0
             JR LD_MARKER
 LD_LOOP:    EX AF,AF'
             JR NZ,LD_FLAG
             JR NC,LD_VERIFY
-            LD (IX+$00),L
+            LD (IX+#00),L
             JR LD_NEXT
 LD_FLAG:    RL C
             XOR L
@@ -128,20 +128,20 @@ LD_FLAG:    RL C
             LD C,A
             INC DE
             JR LD_DEC
-LD_VERIFY:  LD A,(IX+$00)
+LD_VERIFY:  LD A,(IX+#00)
             XOR L
             RET NZ
 LD_NEXT:    INC IX
 LD_DEC:     DEC DE
             EX AF,AF'
-            LD B,$B2
-LD_MARKER:  LD L,$01
+            LD B,#B2
+LD_MARKER:  LD L,#01
 LD_8_BITS:  CALL LD_EDGE_2
             RET NC
-            LD A,$CB
+            LD A,#CB
             CP B
             RL L
-            LD B,$B0
+            LD B,#B0
             JP NC,LD_8_BITS
             LD A,H
             XOR L
@@ -150,7 +150,7 @@ LD_8_BITS:  CALL LD_EDGE_2
             OR E
             JR NZ,LD_LOOP
             LD A,H
-            CP $01
+            CP #01
             RET
 
 ; Программы LD_EDGE_2 и LD_ED_GE_1
@@ -161,12 +161,12 @@ LD_EDGE_2:  CALL LD_EDGE_1
 LD_EDGE_1:  JP PICTO
 LD_SAMPLE:  INC B
             RET Z
-            LD A,$7F
-            IN A,($FE)
+            LD A,#7F
+            IN A,(#FE)
             RRA
             RET NC
             XOR C
-            AND $20
+            AND #20
             JR Z,LD_SAMPLE
 
 ; Описание работы LD_SAMPLE также можно
@@ -175,8 +175,8 @@ LD_SAMPLE:  INC B
             LD A,C
             CPL
             LD C,A
-            LD ($5AFE),A
-            LD ($5AFF),A
+            LD (#5AFE),A
+            LD (#5AFF),A
 
 ; — если в отведённое время фронт импульса
 ; найден, инвертируются все биты на
@@ -198,7 +198,7 @@ PICTO:      EXX
 ; — если в С ноль, то счётчик не включать.
 ; Иначе — проверка положения счётчика:
 
-            LD HL,$FC1F
+            LD HL,#FC1F
             DEC (HL)
             LD A,(HL)
             JR Z,SHET
@@ -207,9 +207,9 @@ PICTO:      EXX
 ; счётчика, а в HL — адрес счётчика в
 ; таблице:
 
-            CP $05
+            CP #05
             JR NC,ATT_R
-            LD HL,$FC1B
+            LD HL,#FC1B
 
 ; Теперь переход на адреса в дисплейном
 ; файле:
@@ -218,21 +218,21 @@ PICTO:      EXX
             INC L
             INC L
             DEC (HL)
-            LD HL,($FC1B)
+            LD HL,(#FC1B)
 
 ; Дальнейшая часть вычисляет адрес
 ; печатаемой цифры:
 
             LD A,(HL)
-            ADD A,$32
+            ADD A,#32
             LD E,A
-            LD D,$FC
+            LD D,#FC
 
 ; Следующий фрагмент рисует шаблон,
 ; лежащий в таблице по адресам
 ; #FC32 — #FC89:
 
-            LD HL,($FC1D)
+            LD HL,(#FC1D)
             LD A,(DE)
             LD (HL),A
             INC E
@@ -269,9 +269,9 @@ PICTO:      EXX
 ; Далее — фрагмент, осуществляющий
 ; задержку в 358 тактов процессора:
 
-LD_DELAY:   LD B,$17
+LD_DELAY:   LD B,#17
 WAIT_1:     DJNZ WAIT_1
-            LD A,$00
+            LD A,#00
             NEG
             AND A
             EXX
@@ -280,44 +280,44 @@ WAIT_1:     DJNZ WAIT_1
 ; Затем — установка атрибутов в
 ; знакоместах счётчика:
 
-ATT_R:      LD A,$47
-            LD ($5AFA),A
-            LD ($5AFB),A
-            LD ($5AFC),A
-            LD ($5AFD),A
+ATT_R:      LD A,#47
+            LD (#5AFA),A
+            LD (#5AFB),A
+            LD (#5AFC),A
+            LD (#5AFD),A
             INC HL
             INC HL
-            LD B,$0D
+            LD B,#0D
             JP WAIT_1
 
 ; Далее следует процедура SHET:
 
-SHET:       LD B,$4F
-            LD DE,($FC16)
-            LD HL,($FC18)
+SHET:       LD B,#4F
+            LD DE,(#FC16)
+            LD HL,(#FC18)
             DEC E
             JP P,DES
             LD E,B
             DEC D
-            LD B,$05
+            LD B,#05
 WAIT_2:     DJNZ WAIT_2
             LD A,(HL)
             JP END_
 DES:        LD A,D
-            AND $07
+            AND #07
             JP Z,SOT_1
             DEC D
             JP P,SOT_2
             LD D,B
             DEC L
-            LD A,($8000)
-            LD A,($8000)
-            LD A,($8000)
+            LD A,(#8000)
+            LD A,(#8000)
+            LD A,(#8000)
             JP END_
 SOT_1:      LD A,(HL)
             LD A,(HL)
 SOT_2:      LD A,L
-            AND $07
+            AND #07
             JP Z,HANDR_1
             DEC L
             JP P,HANDR_2
@@ -328,17 +328,17 @@ SOT_2:      LD A,L
 HANDR_1:    LD A,(HL)
             LD A,(HL)
 HANDR_2:    LD A,H
-            AND $07
+            AND #07
             JR Z,END_
             DEC H
-END_:       LD ($FC16),DE
-            LD ($FC18),HL
-            LD HL,$FC15
-            LD ($FC1B),HL
-            LD HL,$50FE
-            LD ($FC1D),HL
-            LD A,$40
-            LD ($FC1F),A
+END_:       LD (#FC16),DE
+            LD (#FC18),HL
+            LD HL,#FC15
+            LD (#FC1B),HL
+            LD HL,#50FE
+            LD (#FC1D),HL
+            LD A,#40
+            LD (#FC1F),A
             NEG
             NEG
             NEG
@@ -357,8 +357,8 @@ END_:       LD ($FC16),DE
 ; хэдера, затем это значение делится
 ; на 32:
 
-            LD HL,(HEADER+$0B)
-            LD B,$05
+            LD HL,(HEADER+#0B)
+            LD B,#05
 WAIT_3:     SRL H
             RR L
             DJNZ WAIT_3
@@ -367,9 +367,9 @@ WAIT_3:     SRL H
 ; из таблицы, а в ВС — заносится
 ; число, соответствующее десятичному
 ; 1000:
-            LD DE,$FC19
-LOOP_2:     LD A,$FF
-            LD BC,$03E8
+            LD DE,#FC19
+LOOP_2:     LD A,#FF
+            LD BC,#03E8
 
 ; Повтором получаем в А 0, 1, 2 и т.д.:
 LOOP_1:     INC A
@@ -400,7 +400,7 @@ LOOP_1:     INC A
 
             DEC DE
             LD A,E
-            CP $15
+            CP #15
             JR NZ,LOOP_2
             RET
 
@@ -418,23 +418,23 @@ LOOP_1:     INC A
 LD_HEADER:  XOR A
             LD (ENABLED),A
             LD IX,HEADER
-            LD DE,$0011
+            LD DE,#0011
             XOR A
             SCF
             CALL LD_BYTES
             JR NC,ERR
-            CALL $FE0F
-            LD A,$01
+            CALL #FE0F
+            LD A,#01
             LD (ENABLED),A
-            LD IX,(HEADER+$0D)
-            LD DE,(HEADER+$0B)
-            LD A,$FF
+            LD IX,(HEADER+#0D)
+            LD DE,(HEADER+#0B)
+            LD A,#FF
             SCF
             CALL LD_BYTES
             JR NC,ERR
             EI
             RET
-ERR:        JP $0806
+ERR:        JP #0806
 START:      EXX
             PUSH HL
             EXX
