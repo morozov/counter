@@ -3,4 +3,4 @@ boot.tap: boot.bas counter.tap
 	cat counter.tap EXOLON\$$.tap >> boot.tap
 
 counter.tap: counter.asm
-	pasmo --bin counter.asm counter.bin
+	pasmo --tap counter.asm counter.tap
