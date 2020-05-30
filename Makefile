@@ -1,4 +1,4 @@
-boot.tap: boot.bas counter.tap
+boot.tap: boot.bas counter.tap EXOLON$$.tap
 	bas2tap -sboot -a10 boot.bas boot.tap
 	cat counter.tap EXOLON\$$.tap >> boot.tap
 
